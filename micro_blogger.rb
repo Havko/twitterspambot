@@ -1,5 +1,4 @@
 require 'jumpstart_auth'
-
 class MicroBlogger
 	attr_reader :client
 
@@ -27,6 +26,8 @@ class MicroBlogger
 			  when 'q' then puts "Goodbye!"
 			  when 't' then tweet(parts[1..-1].join(" "))
 			  when 'dm' then dm(parts[1], parts[2..-1].join(" ")) 
+			  when 's' then spam_my_followers(parts[1..-1].join(" "))
+			  when 'elt' then everyones_last_tweet
 			  else
 			  	puts "Sorry, I don't know how to #{command}"
 			  end
@@ -41,10 +42,32 @@ class MicroBlogger
 		puts message
 		tweet(message)
 	    else
+	    puts screen_names
 		puts "You can only dm those who follow you"
 		end
 
 	end
+
+	def followers_list
+		screen_names = []
+		@client.followers.each  { |follower|screen_names << @client.user(follower).screen_name}
+		
+		return screen_names
+	end
+
+	def spam_my_followers(message)
+		followers_list.each {|follower| dm(follower, "This is a test!")}
+		end
+
+	def everyones_last_tweet
+		friends = @client.friends
+		friends.each do |friend|
+          puts friend.status.source
+          puts ""
+		end
+	end
+
+
 
 end
 mytweet = "".ljust(140, "abcd")
